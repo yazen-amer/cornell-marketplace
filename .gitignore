@@ -2,9 +2,18 @@
 /shelf/
 /.idea/workspace.xml
 
-target/
-.idea/
-*.iml
+# Backend
+backend/target/
+backend/.idea/
+backend/*.iml
+backend/.env
 
-.env
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.*
+
+# General
 *.log
+.DS_Store
