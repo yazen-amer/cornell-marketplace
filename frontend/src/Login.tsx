@@ -1,3 +1,4 @@
+import { API_URL } from './config';
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
@@ -12,7 +13,7 @@ export default function Login({ setToken }: LoginProps) {
     <main className="auth-wrap">
       <form className="form-card auth-card" onSubmit={(e) => {
         e.preventDefault();
-        fetch('http://localhost:8080/auth/login', {
+        fetch(`${API_URL}/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password }),

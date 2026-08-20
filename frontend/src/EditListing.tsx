@@ -1,3 +1,4 @@
+import { API_URL } from './config';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
@@ -14,7 +15,7 @@ export default function EditListing(props: EditListingProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`http://localhost:8080/listings/${params.id}`)
+    fetch(`${API_URL}/listings/${params.id}`)
       .then((response) => {
         if (!response.ok) throw new Error('Failed to fetch listing');
         return response.json();
@@ -40,7 +41,7 @@ export default function EditListing(props: EditListingProps) {
         formData.append('listingEditRequest', new Blob([JSON.stringify(listingEditRequest)], { type: 'application/json' }));
         if (image) formData.append('imageUpload', image);
 
-        fetch(`http://localhost:8080/listings/${params.id}`, {
+        fetch(`${API_URL}/listings/${params.id}`, {
           method: 'PATCH',
           headers: { Authorization: `Bearer ${props.token}` },
           body: formData,

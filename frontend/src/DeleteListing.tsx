@@ -1,3 +1,4 @@
+import { API_URL } from './config';
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
@@ -13,7 +14,7 @@ export default function DeleteListing(props: DeleteListingProps) {
 
     if (confirmed) {
         return (
-            fetch(`http://localhost:8080/listings/${params.id}`, {
+            fetch(`${API_URL}/listings/${params.id}`, {
                         method: "DELETE",
                         headers: { 'Authorization': `Bearer ${props.token}` },
                     }).then((Response) => {if (Response.ok) {

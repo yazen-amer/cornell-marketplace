@@ -1,3 +1,4 @@
+import { API_URL } from './config';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -21,7 +22,7 @@ export default function CreateListing(props: CreateListingProps) {
         formData.append('listingRequest', new Blob([JSON.stringify(listingRequest)], { type: 'application/json' }));
         if (image) formData.append('imageUpload', image);
 
-        fetch('http://localhost:8080/listings', {
+        fetch(`${API_URL}/listings`, {
           method: 'POST',
           headers: { Authorization: `Bearer ${props.token}` },
           body: formData,

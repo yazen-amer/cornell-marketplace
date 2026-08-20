@@ -1,3 +1,4 @@
+import { API_URL } from './config';
 import { BrowserRouter as Router, Route, Routes, Navigate, Outlet } from 'react-router-dom';
 import ListingDetails from './ListingDetails.tsx';
 import { HomePage } from './Homepage.tsx';
@@ -23,7 +24,7 @@ function App() {
       return;
     }
 
-    fetch('http://localhost:8080/users/me', {
+    fetch(`${API_URL}/users/me`, {
       method: 'GET',
       headers: { Authorization: `Bearer ${token}` },
     })

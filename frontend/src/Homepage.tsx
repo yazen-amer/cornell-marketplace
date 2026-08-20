@@ -1,3 +1,4 @@
+import { API_URL } from './config';
 import ListingCard from './ListingCard.tsx';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
@@ -12,8 +13,8 @@ export function HomePage() {
 
   useEffect(() => {
     const url = searchTerm === ''
-      ? 'http://localhost:8080/listings'
-      : `http://localhost:8080/listings/search?${params}`;
+      ? `${API_URL}/listings`
+      : `${API_URL}/listings/search?${params}`;
 
     fetch(url).then((response) => response.json()).then((data) => setListings(data));
   }, [searchTerm]);

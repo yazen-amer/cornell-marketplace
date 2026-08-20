@@ -1,3 +1,4 @@
+import { API_URL } from './config';
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import type { Listing } from './Homepage.tsx';
@@ -17,7 +18,7 @@ export default function ListingDetails(props: ListingDetailsProps) {
     const confirmed = window.confirm('Are you sure you want to delete this item?');
     if (!confirmed) return;
 
-    fetch(`http://localhost:8080/listings/${params.id}`, {
+    fetch(`${API_URL}/listings/${params.id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${props.token}` },
     }).then((response) => {
@@ -27,7 +28,7 @@ export default function ListingDetails(props: ListingDetailsProps) {
   }
 
   useEffect(() => {
-    fetch(`http://localhost:8080/listings/${params.id}`)
+    fetch(`${API_URL}/listings/${params.id}`)
       .then((response) => response.json())
       .then((data) => setListing(data));
   }, [params.id]);

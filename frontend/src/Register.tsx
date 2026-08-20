@@ -1,3 +1,4 @@
+import { API_URL } from './config';
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
@@ -13,7 +14,7 @@ export default function Register({ setToken }: RegisterProps) {
     <main className="auth-wrap">
       <form className="form-card auth-card" onSubmit={(e) => {
         e.preventDefault();
-        fetch('http://localhost:8080/auth/register', {
+        fetch(`${API_URL}/auth/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username, email, password }),
