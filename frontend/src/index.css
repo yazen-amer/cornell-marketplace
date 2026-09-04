@@ -46,6 +46,8 @@ h2 { margin-bottom: 8px; font-size: 1.45rem; letter-spacing: -.02em; }
 .button:hover { transform: translateY(-1px); }
 .button-primary { color: white; background: var(--brand); box-shadow: 0 8px 20px rgba(179, 27, 27, .18); }
 .button-primary:hover { background: var(--brand-dark); }
+.button-link { background: none; border: none; padding: 0; color: var(--brand); font-weight: 600; cursor: pointer; text-decoration: underline; }
+.button-link:hover { color: var(--brand-dark); }
 .button-secondary { color: var(--text); background: white; border-color: var(--border); }
 .button-secondary:hover { border-color: #c9ced6; background: var(--surface-soft); }
 .button-danger { color: white; background: var(--danger); }

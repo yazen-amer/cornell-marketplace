@@ -1,9 +1,12 @@
 package com.yazen.cornellmarketplace.controllers;
 
 import com.yazen.cornellmarketplace.dtos.LoginResponse;
+import com.yazen.cornellmarketplace.dtos.MessageResponse;
 import com.yazen.cornellmarketplace.dtos.RegisterDto;
 import com.yazen.cornellmarketplace.dtos.LoginDto;
 import com.yazen.cornellmarketplace.dtos.RegisterResponse;
+import com.yazen.cornellmarketplace.dtos.ResendVerificationDto;
+import com.yazen.cornellmarketplace.dtos.VerifyEmailDto;
 import com.yazen.cornellmarketplace.services.AuthService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,6 +33,16 @@ public class AuthController {
         return authService.login(loginDto);
     }
 
+    @PostMapping("/auth/verify")
+    @ResponseBody
+    public LoginResponse verifyEmail(@RequestBody VerifyEmailDto verifyEmailDto) {
+        return authService.verifyEmail(verifyEmailDto);
+    }
 
+    @PostMapping("/auth/resend-verification")
+    @ResponseBody
+    public MessageResponse resendVerification(@RequestBody ResendVerificationDto resendVerificationDto) {
+        return authService.resendVerification(resendVerificationDto);
+    }
 
 }

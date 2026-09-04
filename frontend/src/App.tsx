@@ -5,6 +5,7 @@ import { HomePage } from './Homepage.tsx';
 import CreateListing from './CreateListing.tsx';
 import Login from './Login.tsx';
 import Register from './Register.tsx';
+import Verify from './Verify.tsx';
 import { useState, useEffect } from 'react';
 import Navbar from './Navbar.tsx';
 import EditListing from './EditListing.tsx';
@@ -64,6 +65,7 @@ function App() {
           </Route>
           <Route path="/login" element={<Login setToken={setToken} />} />
           <Route path="/register" element={<Register setToken={setToken} />} />
+          <Route path="/verify" element={<Verify setToken={setToken} />} />
         </Routes>
       </div>
     </Router>

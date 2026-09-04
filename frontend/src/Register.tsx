@@ -4,31 +4,41 @@ import { useNavigate, Link } from 'react-router-dom';
 
 type RegisterProps = { setToken: React.Dispatch<React.SetStateAction<string | null>> };
 
+const CORNELL_EMAIL_SUFFIX = '@cornell.edu';
+
 export default function Register({ setToken }: RegisterProps) {
+  void setToken; // no longer set on register — account must be verified first
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   return (
     <main className="auth-wrap">
       <form className="form-card auth-card" onSubmit={(e) => {
         e.preventDefault();
+        setError('');
+
+        if (!email.toLowerCase().endsWith(CORNELL_EMAIL_SUFFIX)) {
+          setError('Please use your @cornell.edu email to register.');
+          return;
+        }
+
         fetch(`${API_URL}/auth/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username, email, password }),
         })
-          .then((response) => {
-            if (!response.ok) throw new Error('Invalid username, email or password');
-            return response.json();
+          .then(async (response) => {
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Could not create your account.');
+            return data;
           })
           .then((data) => {
-            localStorage.setItem('token', data.token);
-            setToken(data.token);
-            navigate('/');
+            navigate('/verify', { state: { email: data.email } });
           })
-          .catch((error) => console.log(error.message));
+          .catch((err) => setError(err.message));
       }}>
         <div className="form-header">
           <p className="eyebrow">Join the marketplace</p>
@@ -48,6 +58,7 @@ export default function Register({ setToken }: RegisterProps) {
             <label htmlFor="Password">Password</label>
             <input type="password" id="Password" autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} />
           </div>
+          {error && <p className="muted" style={{ color: 'crimson' }}>{error}</p>}
           <button className="button button-primary" type="submit">Create account</button>
           <p className="muted">Already have an account? <Link to="/login"><strong>Log in</strong></Link></p>
         </div>

@@ -57,7 +57,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (userEmail != null && authentication == null) {
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 
-                if (jwtService.isTokenValid(jwt, userDetails)) {
+                // Re-check enabled status on every request (not just at login). This
+                // matters because an account can be de-verified/disabled after a JWT
+                // was already issued — e.g. an admin revokes it later — and JWTs are
+                // stateless, so this DB read is what stops that token from still working.
+                if (jwtService.isTokenValid(jwt, userDetails) && userDetails.isEnabled()) {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             userDetails,
                             null,

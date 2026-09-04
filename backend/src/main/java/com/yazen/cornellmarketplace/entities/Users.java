@@ -63,6 +63,41 @@ public class Users implements UserDetails {
     @Column(name = "updated_at")
     private Date updatedAt;
 
+    // --- Cornell email verification state ---
+
+    @Column(nullable = false)
+    private boolean verified = false;
+
+    @Column(name = "verification_code", length = 6)
+    private String verificationCode;
+
+    @Column(name = "verification_code_expiry")
+    private Date verificationCodeExpiry;
+
+    public boolean isVerified() {
+        return verified;
+    }
+
+    public void setVerified(boolean verified) {
+        this.verified = verified;
+    }
+
+    public String getVerificationCode() {
+        return verificationCode;
+    }
+
+    public void setVerificationCode(String verificationCode) {
+        this.verificationCode = verificationCode;
+    }
+
+    public Date getVerificationCodeExpiry() {
+        return verificationCodeExpiry;
+    }
+
+    public void setVerificationCodeExpiry(Date verificationCodeExpiry) {
+        this.verificationCodeExpiry = verificationCodeExpiry;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of();
@@ -87,8 +122,12 @@ public class Users implements UserDetails {
         return true;
     }
 
+    // Spring Security calls this on every authentication attempt (via
+    // DaoAuthenticationProvider's pre-auth checks) BEFORE the password is even
+    // checked. Wiring it to `verified` means an unverified user is automatically
+    // rejected at login with a DisabledException — no extra logic needed in AuthService.
     @Override
     public boolean isEnabled() {
-        return true;
+        return verified;
     }
 }

@@ -8,26 +8,29 @@ export default function Login({ setToken }: LoginProps) {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   return (
     <main className="auth-wrap">
       <form className="form-card auth-card" onSubmit={(e) => {
         e.preventDefault();
+        setError('');
         fetch(`${API_URL}/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password }),
         })
-          .then((response) => {
-            if (!response.ok) throw new Error('Invalid email or password');
-            return response.json();
+          .then(async (response) => {
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Invalid email or password');
+            return data;
           })
           .then((data) => {
             localStorage.setItem('token', data.token);
             setToken(data.token);
             navigate('/');
           })
-          .catch((error) => console.log(error.message));
+          .catch((err) => setError(err.message));
       }}>
         <div className="form-header">
           <p className="eyebrow">Welcome back</p>
@@ -43,6 +46,7 @@ export default function Login({ setToken }: LoginProps) {
             <label htmlFor="Password">Password</label>
             <input type="password" id="Password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
           </div>
+          {error && <p className="muted" style={{ color: 'crimson' }}>{error}</p>}
           <button className="button button-primary" type="submit">Log in</button>
           <p className="muted">New here? <Link to="/register"><strong>Create an account</strong></Link></p>
         </div>

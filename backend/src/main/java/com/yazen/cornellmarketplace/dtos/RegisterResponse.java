@@ -2,14 +2,19 @@ package com.yazen.cornellmarketplace.dtos;
 
 public class RegisterResponse {
 
-    private String token;
+    private String message;
+    private String email;
 
-    public RegisterResponse(String token) {
-        this.token=token;
+    public RegisterResponse(String message, String email) {
+        this.message = message;
+        this.email = email;
     }
 
-    public String getToken() {
-        return token;
+    public String getMessage() {
+        return message;
     }
 
+    public String getEmail() {
+        return email;
+    }
 }
