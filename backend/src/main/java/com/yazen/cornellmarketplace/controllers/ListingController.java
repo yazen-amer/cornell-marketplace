@@ -57,7 +57,8 @@ public class ListingController {
                 listingRequest.getTitle(),
                 listingRequest.getDescription(),
                 listingRequest.getPrice(),
-                imageUrl
+                imageUrl,
+                listingRequest.getPickupLocation()
         );
 
         Listing saved = listingRepository.save(listing);
@@ -89,6 +90,9 @@ public class ListingController {
             }
             if (listingEditRequest.getPrice() != null) {
                 listing.setPrice(listingEditRequest.getPrice());
+            }
+            if (listingEditRequest.getPickupLocation() != null) {
+                listing.setPickupLocation(listingEditRequest.getPickupLocation());
             }
             if (imageUpload != null && !imageUpload.isEmpty()) {
                 listing.setImageUrl(s3Service.upload(imageUpload));

@@ -9,11 +9,14 @@ public class ListingEditRequest {
 
     private String imageUrl;
 
-    public ListingEditRequest(String t, String d, Double p, String i) {
+    private String pickupLocation;
+
+    public ListingEditRequest(String t, String d, Double p, String i, String pl) {
         this.title = t;
         this.description = d;
         this.price = p;
         this.imageUrl = i;
+        this.pickupLocation = pl;
     }
 
     public String getTitle() {
@@ -32,6 +35,10 @@ public class ListingEditRequest {
         return price;
     }
 
+    public String getPickupLocation() {
+        return pickupLocation;
+    }
+
     public void setTitle(String t) {
         this.title = t;
     }
@@ -46,6 +53,10 @@ public class ListingEditRequest {
 
     public void setImageUrl(String i) {
         this.imageUrl = i;
+    }
+
+    public void setPickupLocation(String p) {
+        this.pickupLocation = p;
     }
 
 }

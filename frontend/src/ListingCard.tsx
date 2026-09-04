@@ -7,9 +7,10 @@ type ListingCardProps = {
   description: string;
   seller: Seller;
   imageUrl: string;
+  pickupLocation: string;
 };
 
-export default function ListingCard({ title, price, imageUrl }: ListingCardProps) {
+export default function ListingCard({ title, price, imageUrl, pickupLocation }: ListingCardProps) {
   return (
     <article className="listing-card">
       <div className="listing-card-image-wrap">
@@ -18,6 +19,7 @@ export default function ListingCard({ title, price, imageUrl }: ListingCardProps
       <div className="listing-card-body">
         <p className="listing-card-title">{title}</p>
         <p className="listing-card-price">${price.toFixed(2)}</p>
+        {pickupLocation && <p className="listing-card-location">📍 {pickupLocation}</p>}
       </div>
     </article>
   );

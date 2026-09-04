@@ -10,6 +10,8 @@ public class ListingRequest {
 
     private double price;
 
+    private String pickupLocation;
+
     public String getTitle() {
         return title;
     }
@@ -20,5 +22,9 @@ public class ListingRequest {
 
     public double getPrice() {
         return price;
+    }
+
+    public String getPickupLocation() {
+        return pickupLocation;
     }
 }

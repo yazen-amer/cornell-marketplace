@@ -1,6 +1,7 @@
 import { API_URL } from './config';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { SUGGESTED_PICKUP_LOCATIONS } from './pickupLocations';
 
 type EditListingProps = { token: string | null };
 
@@ -10,6 +11,7 @@ export default function EditListing(props: EditListingProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState(0);
+  const [pickupLocation, setPickupLocation] = useState('');
   const [image, setImage] = useState<File | null>(null);
   const [existingImageUrl, setExistingImageUrl] = useState('');
   const [loading, setLoading] = useState(true);
@@ -24,6 +26,7 @@ export default function EditListing(props: EditListingProps) {
         setTitle(data.title);
         setDescription(data.description);
         setPrice(data.price);
+        setPickupLocation(data.pickupLocation ?? '');
         setExistingImageUrl(data.imageUrl);
         setLoading(false);
       });
@@ -31,7 +34,7 @@ export default function EditListing(props: EditListingProps) {
 
   if (loading) return <div className="loading-state">Loading listing…</div>;
 
-  const listingEditRequest = { title, description, price };
+  const listingEditRequest = { title, description, price, pickupLocation };
 
   return (
     <main className="page page-narrow">
@@ -67,6 +70,22 @@ export default function EditListing(props: EditListingProps) {
           <div className="form-field">
             <label htmlFor="price">Price</label>
             <input id="price" type="number" min="0" step="0.01" value={price} onChange={(e) => setPrice(Number(e.target.value))} />
+          </div>
+          <div className="form-field">
+            <label htmlFor="pickupLocation">Pickup location</label>
+            <input
+              id="pickupLocation"
+              type="text"
+              list="pickup-location-options"
+              placeholder="e.g. Ho Plaza"
+              value={pickupLocation}
+              onChange={(e) => setPickupLocation(e.target.value)}
+            />
+            <datalist id="pickup-location-options">
+              {SUGGESTED_PICKUP_LOCATIONS.map((location) => (
+                <option key={location} value={location} />
+              ))}
+            </datalist>
           </div>
           <div className="form-field">
             <label htmlFor="image">Photo</label>

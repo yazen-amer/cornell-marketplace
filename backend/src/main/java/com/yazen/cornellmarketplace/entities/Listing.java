@@ -25,16 +25,19 @@ public class Listing {
 
     private String imageUrl;
 
+    private String pickupLocation;
+
     @ManyToOne
     private Users seller;
 
     public Listing() {}
 
-    public Listing(String title, String description, double price, String imageUrl) {
+    public Listing(String title, String description, double price, String imageUrl, String pickupLocation) {
         this.title = title;
         this.description = description;
         this.price = price;
         this.imageUrl = imageUrl;
+        this.pickupLocation = pickupLocation;
         this.seller = (Users) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
@@ -64,6 +67,10 @@ public class Listing {
         return imageUrl;
     }
 
+    public String getPickupLocation() {
+        return pickupLocation;
+    }
+
     public void setSeller(Users user) {
         this.seller = user;
     }
@@ -86,5 +93,9 @@ public class Listing {
 
     public void setImageUrl(String i) {
         this.imageUrl = i;
+    }
+
+    public void setPickupLocation(String p) {
+        this.pickupLocation = p;
     }
 }

@@ -49,6 +49,9 @@ export default function ListingDetails(props: ListingDetailsProps) {
           <p className="details-price">${listing.price.toFixed(2)}</p>
           <h2>Description</h2>
           <p className="details-description">{listing.description}</p>
+          {listing.pickupLocation && (
+            <p className="details-location">📍 Pickup at <strong>{listing.pickupLocation}</strong></p>
+          )}
           <p className="details-seller">Listed by <strong>{listing.seller.username}</strong></p>
 
           {isOwner && (

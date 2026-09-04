@@ -1,6 +1,7 @@
 import { API_URL } from './config';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { SUGGESTED_PICKUP_LOCATIONS } from './pickupLocations';
 
 type CreateListingProps = { token: string | null };
 
@@ -9,10 +10,11 @@ export default function CreateListing(props: CreateListingProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState(0);
+  const [pickupLocation, setPickupLocation] = useState('');
   const [image, setImage] = useState<File | null>(null);
 
-  const listingRequest = { title, description, price };
-  const canSubmit = title.trim() !== '' && description.trim() !== '' && image !== null;
+  const listingRequest = { title, description, price, pickupLocation };
+  const canSubmit = title.trim() !== '' && description.trim() !== '' && pickupLocation.trim() !== '' && image !== null;
 
   return (
     <main className="page page-narrow">
@@ -48,6 +50,23 @@ export default function CreateListing(props: CreateListingProps) {
           <div className="form-field">
             <label htmlFor="price">Price</label>
             <input id="price" type="number" min="0" step="0.01" placeholder="0.00" value={price || ''} onChange={(e) => setPrice(Number(e.target.value))} />
+          </div>
+          <div className="form-field">
+            <label htmlFor="pickupLocation">Pickup location</label>
+            <input
+              id="pickupLocation"
+              type="text"
+              list="pickup-location-options"
+              placeholder="e.g. Ho Plaza"
+              value={pickupLocation}
+              onChange={(e) => setPickupLocation(e.target.value)}
+            />
+            <datalist id="pickup-location-options">
+              {SUGGESTED_PICKUP_LOCATIONS.map((location) => (
+                <option key={location} value={location} />
+              ))}
+            </datalist>
+            <span className="file-help">Pick a public, well-lit spot on campus. Buyers will see this before reaching out.</span>
           </div>
           <div className="form-field">
             <label htmlFor="image">Photo</label>

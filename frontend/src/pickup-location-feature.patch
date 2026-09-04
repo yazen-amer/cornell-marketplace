@@ -1,0 +1,369 @@
+diff --git a/backend/src/main/java/com/yazen/cornellmarketplace/controllers/ListingController.java b/backend/src/main/java/com/yazen/cornellmarketplace/controllers/ListingController.java
+index 348afbd..02b874d 100644
+--- a/backend/src/main/java/com/yazen/cornellmarketplace/controllers/ListingController.java
++++ b/backend/src/main/java/com/yazen/cornellmarketplace/controllers/ListingController.java
+@@ -57,7 +57,8 @@ public class ListingController {
+                 listingRequest.getTitle(),
+                 listingRequest.getDescription(),
+                 listingRequest.getPrice(),
+-                imageUrl
++                imageUrl,
++                listingRequest.getPickupLocation()
+         );
+ 
+         Listing saved = listingRepository.save(listing);
+@@ -90,6 +91,9 @@ public class ListingController {
+             if (listingEditRequest.getPrice() != null) {
+                 listing.setPrice(listingEditRequest.getPrice());
+             }
++            if (listingEditRequest.getPickupLocation() != null) {
++                listing.setPickupLocation(listingEditRequest.getPickupLocation());
++            }
+             if (imageUpload != null && !imageUpload.isEmpty()) {
+                 listing.setImageUrl(s3Service.upload(imageUpload));
+             }
+diff --git a/backend/src/main/java/com/yazen/cornellmarketplace/dtos/ListingEditRequest.java b/backend/src/main/java/com/yazen/cornellmarketplace/dtos/ListingEditRequest.java
+index 46f85c4..70607cf 100644
+--- a/backend/src/main/java/com/yazen/cornellmarketplace/dtos/ListingEditRequest.java
++++ b/backend/src/main/java/com/yazen/cornellmarketplace/dtos/ListingEditRequest.java
+@@ -9,11 +9,14 @@ public class ListingEditRequest {
+ 
+     private String imageUrl;
+ 
+-    public ListingEditRequest(String t, String d, Double p, String i) {
++    private String pickupLocation;
++
++    public ListingEditRequest(String t, String d, Double p, String i, String pl) {
+         this.title = t;
+         this.description = d;
+         this.price = p;
+         this.imageUrl = i;
++        this.pickupLocation = pl;
+     }
+ 
+     public String getTitle() {
+@@ -32,6 +35,10 @@ public class ListingEditRequest {
+         return price;
+     }
+ 
++    public String getPickupLocation() {
++        return pickupLocation;
++    }
++
+     public void setTitle(String t) {
+         this.title = t;
+     }
+@@ -48,4 +55,8 @@ public class ListingEditRequest {
+         this.imageUrl = i;
+     }
+ 
++    public void setPickupLocation(String p) {
++        this.pickupLocation = p;
++    }
++
+ }
+diff --git a/backend/src/main/java/com/yazen/cornellmarketplace/entities/Listing.java b/backend/src/main/java/com/yazen/cornellmarketplace/entities/Listing.java
+index 0f65657..951bc9b 100644
+--- a/backend/src/main/java/com/yazen/cornellmarketplace/entities/Listing.java
++++ b/backend/src/main/java/com/yazen/cornellmarketplace/entities/Listing.java
+@@ -25,16 +25,19 @@ public class Listing {
+ 
+     private String imageUrl;
+ 
++    private String pickupLocation;
++
+     @ManyToOne
+     private Users seller;
+ 
+     public Listing() {}
+ 
+-    public Listing(String title, String description, double price, String imageUrl) {
++    public Listing(String title, String description, double price, String imageUrl, String pickupLocation) {
+         this.title = title;
+         this.description = description;
+         this.price = price;
+         this.imageUrl = imageUrl;
++        this.pickupLocation = pickupLocation;
+         this.seller = (Users) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+     }
+ 
+@@ -64,6 +67,10 @@ public class Listing {
+         return imageUrl;
+     }
+ 
++    public String getPickupLocation() {
++        return pickupLocation;
++    }
++
+     public void setSeller(Users user) {
+         this.seller = user;
+     }
+@@ -87,4 +94,8 @@ public class Listing {
+     public void setImageUrl(String i) {
+         this.imageUrl = i;
+     }
++
++    public void setPickupLocation(String p) {
++        this.pickupLocation = p;
++    }
+ }
+diff --git a/backend/src/main/java/com/yazen/cornellmarketplace/requests/ListingRequest.java b/backend/src/main/java/com/yazen/cornellmarketplace/requests/ListingRequest.java
+index deecb48..9b88c7b 100644
+--- a/backend/src/main/java/com/yazen/cornellmarketplace/requests/ListingRequest.java
++++ b/backend/src/main/java/com/yazen/cornellmarketplace/requests/ListingRequest.java
+@@ -10,6 +10,8 @@ public class ListingRequest {
+ 
+     private double price;
+ 
++    private String pickupLocation;
++
+     public String getTitle() {
+         return title;
+     }
+@@ -21,4 +23,8 @@ public class ListingRequest {
+     public double getPrice() {
+         return price;
+     }
++
++    public String getPickupLocation() {
++        return pickupLocation;
++    }
+ }
+diff --git a/frontend/src/CreateListing.tsx b/frontend/src/CreateListing.tsx
+index 88f3149..b63475d 100644
+--- a/frontend/src/CreateListing.tsx
++++ b/frontend/src/CreateListing.tsx
+@@ -1,6 +1,7 @@
+ import { API_URL } from './config';
+ import { useState } from 'react';
+ import { useNavigate } from 'react-router-dom';
++import { SUGGESTED_PICKUP_LOCATIONS } from './pickupLocations';
+ 
+ type CreateListingProps = { token: string | null };
+ 
+@@ -9,10 +10,11 @@ export default function CreateListing(props: CreateListingProps) {
+   const [title, setTitle] = useState('');
+   const [description, setDescription] = useState('');
+   const [price, setPrice] = useState(0);
++  const [pickupLocation, setPickupLocation] = useState('');
+   const [image, setImage] = useState<File | null>(null);
+ 
+-  const listingRequest = { title, description, price };
+-  const canSubmit = title.trim() !== '' && description.trim() !== '' && image !== null;
++  const listingRequest = { title, description, price, pickupLocation };
++  const canSubmit = title.trim() !== '' && description.trim() !== '' && pickupLocation.trim() !== '' && image !== null;
+ 
+   return (
+     <main className="page page-narrow">
+@@ -49,6 +51,23 @@ export default function CreateListing(props: CreateListingProps) {
+             <label htmlFor="price">Price</label>
+             <input id="price" type="number" min="0" step="0.01" placeholder="0.00" value={price || ''} onChange={(e) => setPrice(Number(e.target.value))} />
+           </div>
++          <div className="form-field">
++            <label htmlFor="pickupLocation">Pickup location</label>
++            <input
++              id="pickupLocation"
++              type="text"
++              list="pickup-location-options"
++              placeholder="e.g. Ho Plaza"
++              value={pickupLocation}
++              onChange={(e) => setPickupLocation(e.target.value)}
++            />
++            <datalist id="pickup-location-options">
++              {SUGGESTED_PICKUP_LOCATIONS.map((location) => (
++                <option key={location} value={location} />
++              ))}
++            </datalist>
++            <span className="file-help">Pick a public, well-lit spot on campus. Buyers will see this before reaching out.</span>
++          </div>
+           <div className="form-field">
+             <label htmlFor="image">Photo</label>
+             <input id="image" type="file" accept="image/*" onChange={(e) => setImage(e.target.files?.[0] ?? null)} />
+diff --git a/frontend/src/EditListing.tsx b/frontend/src/EditListing.tsx
+index a7d30c8..861ebf2 100644
+--- a/frontend/src/EditListing.tsx
++++ b/frontend/src/EditListing.tsx
+@@ -1,6 +1,7 @@
+ import { API_URL } from './config';
+ import { useParams, useNavigate } from 'react-router-dom';
+ import { useState, useEffect } from 'react';
++import { SUGGESTED_PICKUP_LOCATIONS } from './pickupLocations';
+ 
+ type EditListingProps = { token: string | null };
+ 
+@@ -10,6 +11,7 @@ export default function EditListing(props: EditListingProps) {
+   const [title, setTitle] = useState('');
+   const [description, setDescription] = useState('');
+   const [price, setPrice] = useState(0);
++  const [pickupLocation, setPickupLocation] = useState('');
+   const [image, setImage] = useState<File | null>(null);
+   const [existingImageUrl, setExistingImageUrl] = useState('');
+   const [loading, setLoading] = useState(true);
+@@ -24,6 +26,7 @@ export default function EditListing(props: EditListingProps) {
+         setTitle(data.title);
+         setDescription(data.description);
+         setPrice(data.price);
++        setPickupLocation(data.pickupLocation ?? '');
+         setExistingImageUrl(data.imageUrl);
+         setLoading(false);
+       });
+@@ -31,7 +34,7 @@ export default function EditListing(props: EditListingProps) {
+ 
+   if (loading) return <div className="loading-state">Loading listing…</div>;
+ 
+-  const listingEditRequest = { title, description, price };
++  const listingEditRequest = { title, description, price, pickupLocation };
+ 
+   return (
+     <main className="page page-narrow">
+@@ -68,6 +71,22 @@ export default function EditListing(props: EditListingProps) {
+             <label htmlFor="price">Price</label>
+             <input id="price" type="number" min="0" step="0.01" value={price} onChange={(e) => setPrice(Number(e.target.value))} />
+           </div>
++          <div className="form-field">
++            <label htmlFor="pickupLocation">Pickup location</label>
++            <input
++              id="pickupLocation"
++              type="text"
++              list="pickup-location-options"
++              placeholder="e.g. Ho Plaza"
++              value={pickupLocation}
++              onChange={(e) => setPickupLocation(e.target.value)}
++            />
++            <datalist id="pickup-location-options">
++              {SUGGESTED_PICKUP_LOCATIONS.map((location) => (
++                <option key={location} value={location} />
++              ))}
++            </datalist>
++          </div>
+           <div className="form-field">
+             <label htmlFor="image">Photo</label>
+             <img className="current-image" src={existingImageUrl} alt="Current listing" />
+diff --git a/frontend/src/Homepage.tsx b/frontend/src/Homepage.tsx
+index f1fb096..f1aedf7 100644
+--- a/frontend/src/Homepage.tsx
++++ b/frontend/src/Homepage.tsx
+@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
+ import { Link } from 'react-router-dom';
+ 
+ export interface Seller { id: number; username: string; }
+-export interface Listing { id: number; title: string; price: number; description: string; seller: Seller; imageUrl: string; }
++export interface Listing { id: number; title: string; price: number; description: string; seller: Seller; imageUrl: string; pickupLocation: string; }
+ 
+ export function HomePage() {
+   const [listings, setListings] = useState<Listing[]>([]);
+diff --git a/frontend/src/ListingCard.tsx b/frontend/src/ListingCard.tsx
+index bfad971..f0ef203 100644
+--- a/frontend/src/ListingCard.tsx
++++ b/frontend/src/ListingCard.tsx
+@@ -7,9 +7,10 @@ type ListingCardProps = {
+   description: string;
+   seller: Seller;
+   imageUrl: string;
++  pickupLocation: string;
+ };
+ 
+-export default function ListingCard({ title, price, imageUrl }: ListingCardProps) {
++export default function ListingCard({ title, price, imageUrl, pickupLocation }: ListingCardProps) {
+   return (
+     <article className="listing-card">
+       <div className="listing-card-image-wrap">
+@@ -18,6 +19,7 @@ export default function ListingCard({ title, price, imageUrl }: ListingCardProps
+       <div className="listing-card-body">
+         <p className="listing-card-title">{title}</p>
+         <p className="listing-card-price">${price.toFixed(2)}</p>
++        {pickupLocation && <p className="listing-card-location">📍 {pickupLocation}</p>}
+       </div>
+     </article>
+   );
+diff --git a/frontend/src/ListingDetails.tsx b/frontend/src/ListingDetails.tsx
+index 6329654..83bffe8 100644
+--- a/frontend/src/ListingDetails.tsx
++++ b/frontend/src/ListingDetails.tsx
+@@ -49,6 +49,9 @@ export default function ListingDetails(props: ListingDetailsProps) {
+           <p className="details-price">${listing.price.toFixed(2)}</p>
+           <h2>Description</h2>
+           <p className="details-description">{listing.description}</p>
++          {listing.pickupLocation && (
++            <p className="details-location">📍 Pickup at <strong>{listing.pickupLocation}</strong></p>
++          )}
+           <p className="details-seller">Listed by <strong>{listing.seller.username}</strong></p>
+ 
+           {isOwner && (
+diff --git a/frontend/src/index.css b/frontend/src/index.css
+index 050eb9c..a8facfd 100644
+--- a/frontend/src/index.css
++++ b/frontend/src/index.css
+@@ -83,6 +83,7 @@ h2 { margin-bottom: 8px; font-size: 1.45rem; letter-spacing: -.02em; }
+ .listing-card-body { padding: 15px 16px 17px; }
+ .listing-card-title { margin-bottom: 6px; font-weight: 750; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+ .listing-card-price { margin: 0; font-size: 1.08rem; font-weight: 800; color: var(--brand); }
++.listing-card-location { margin: 4px 0 0; font-size: .85rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+ 
+ .details-card { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(320px, .65fr); overflow: hidden; background: white; border: 1px solid var(--border); border-radius: 20px; box-shadow: var(--shadow-md); }
+ .details-media { min-height: 540px; background: #eef0f3; }
+@@ -91,6 +92,7 @@ h2 { margin-bottom: 8px; font-size: 1.45rem; letter-spacing: -.02em; }
+ .details-title { margin-bottom: 12px; font-size: clamp(1.8rem, 3vw, 2.7rem); }
+ .details-price { margin: 0 0 24px; color: var(--brand); font-size: 1.8rem; font-weight: 850; }
+ .details-description { color: #4b5563; line-height: 1.7; white-space: pre-wrap; }
++.details-location { margin: 16px 0 0; color: #4b5563; font-size: .95rem; }
+ .details-seller { margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--border); color: var(--muted); font-size: .92rem; }
+ .details-actions { display: flex; gap: 10px; margin-top: auto; padding-top: 30px; }
+ 
+diff --git a/frontend/src/pickupLocations.ts b/frontend/src/pickupLocations.ts
+new file mode 100644
+index 0000000..0cbc31b
+--- /dev/null
++++ b/frontend/src/pickupLocations.ts
+@@ -0,0 +1,15 @@
++// Common on-campus meeting spots, offered as autocomplete suggestions.
++// Sellers can still type any custom location — this list is not enforced.
++// A handful of well-known landmarks spanning North, West, and Central
++// campus, plus Collegetown (informally "South campus").
++export const SUGGESTED_PICKUP_LOCATIONS = [
++  'Olin Library', // Central campus
++  'Uris Library', // Central campus
++  'Ho Plaza', // Central campus
++  'RPCC (Robert Purcell Community Center)', // North campus
++  'Appel Commons', // North campus
++  'Court-Kay-Bauer Hall (CKB)', // North campus
++  'Becker House', // West campus
++  'Alice Cook House', // West campus
++  'Collegetown Bagels (CTB)', // Collegetown / South campus
++];
+diff --git a/scripts/seed_data.py b/scripts/seed_data.py
+index 35c5f4a..6deab73 100644
+--- a/scripts/seed_data.py
++++ b/scripts/seed_data.py
+@@ -1,8 +1,21 @@
++import random
+ import requests
+ import json
+ 
+ BASE_URL = "http://localhost:8080"  # confirm this matches your backend's actual port
+ 
++PICKUP_LOCATIONS = [
++    "Olin Library",
++    "Uris Library",
++    "Ho Plaza",
++    "RPCC (Robert Purcell Community Center)",
++    "Appel Commons",
++    "Court-Kay-Bauer Hall (CKB)",
++    "Becker House",
++    "Alice Cook House",
++    "Collegetown Bagels (CTB)",
++]
++
+ # --- Step A: Auth ---
+ register_payload = {
+     "username": "seed_bot",
+@@ -33,7 +46,8 @@ for product in products:
+     listing_request = {
+         "title": product["title"],
+         "description": product["description"],
+-        "price": product["price"]
++        "price": product["price"],
++        "pickupLocation": random.choice(PICKUP_LOCATIONS)
+     }
+ 
+     image_url = product["images"][0]

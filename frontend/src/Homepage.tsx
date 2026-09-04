@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 export interface Seller { id: number; username: string; }
-export interface Listing { id: number; title: string; price: number; description: string; seller: Seller; imageUrl: string; }
+export interface Listing { id: number; title: string; price: number; description: string; seller: Seller; imageUrl: string; pickupLocation: string; }
 
 export function HomePage() {
   const [listings, setListings] = useState<Listing[]>([]);
