@@ -12,10 +12,6 @@ Backend: Java, Spring Boot, Spring Security, JWT, PostgreSQL, Hibernate/JPA
 Frontend: React, TypeScript
 Storage: AWS S3
 
-## Screenshots
-[listings page]
-[create listing form]
-
 ## Running it locally
 
 You'll need Java 17+, Node 18+, PostgreSQL, and AWS credentials (or a mocked S3 setup).
