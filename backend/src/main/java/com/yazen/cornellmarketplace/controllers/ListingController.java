@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,7 +44,7 @@ public class ListingController {
     @GetMapping("/listings/{id}")
     @ResponseBody
     public Listing getListing(@PathVariable Long id) {
-        return listingRepository.findById(id).orElseThrow(() -> new RuntimeException("Listing not found"));
+        return listingRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Listing not found."));
     }
 
     @PostMapping("/listings")
@@ -74,13 +76,13 @@ public class ListingController {
             @RequestPart(value = "imageUpload", required = false) MultipartFile imageUpload
     ) {
 
-        Listing listing = listingRepository.findById(id).orElseThrow(() -> new RuntimeException("Listing not found."));
+        Listing listing = listingRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Listing not found."));
         String username = principal.getName();
         Users user = userRepository.findByEmail(username).orElseThrow(() -> new RuntimeException("User not found."));
         Long userID = user.getId();
 
         if (!listing.getSeller().getId().equals(userID)) {
-            throw new RuntimeException("This is not your listing.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This is not your listing.");
         } else {
             if (listingEditRequest.getTitle() != null) {
                 listing.setTitle(listingEditRequest.getTitle());
@@ -122,13 +124,13 @@ public class ListingController {
     @DeleteMapping("/listings/{id}")
     @ResponseBody
     public Listing deleteListing(@PathVariable Long id, Principal principal) {
-        Listing listing = listingRepository.findById(id).orElseThrow(() -> new RuntimeException("Listing not found."));
+        Listing listing = listingRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Listing not found."));
         String username = principal.getName();
         Users user = userRepository.findByEmail(username).orElseThrow(() -> new RuntimeException("User not found."));
         Long userID = user.getId();
 
         if (!listing.getSeller().getId().equals(userID)) {
-            throw new RuntimeException("This is not your listing.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This is not your listing.");
         } else {
             listingRepository.delete(listing);
             return listing;

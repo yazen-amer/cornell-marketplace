@@ -17,3 +17,4 @@ frontend/.env.*
 # General
 *.log
 .DS_Store
+!frontend/.env.example

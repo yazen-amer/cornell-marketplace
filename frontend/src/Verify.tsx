@@ -1,3 +1,4 @@
+import { readJsonResponse } from './api';
 import { API_URL } from './config';
 import { useState } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
@@ -20,11 +21,7 @@ export default function Verify({ setToken }: VerifyProps) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, code }),
     })
-      .then(async (response) => {
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || 'That code is invalid or has expired.');
-        return data;
-      })
+      .then((response) => readJsonResponse<{ token: string }>(response, 'That code is invalid or has expired.'))
       .then((data) => {
         localStorage.setItem('token', data.token);
         setToken(data.token);
@@ -41,11 +38,7 @@ export default function Verify({ setToken }: VerifyProps) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email }),
     })
-      .then(async (response) => {
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || 'Could not resend code.');
-        return data;
-      })
+      .then((response) => readJsonResponse<{ message: string }>(response, 'Could not resend code.'))
       .then((data) => setInfo(data.message))
       .catch((err) => setError(err.message));
   };

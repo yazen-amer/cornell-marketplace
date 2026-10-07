@@ -1,6 +1,9 @@
 package com.yazen.cornellmarketplace.dtos;
 
+import jakarta.validation.constraints.*;
+
 public class ResendVerificationDto {
+    @NotBlank @Size(max = 100)
     private String email;
 
     public ResendVerificationDto() {}

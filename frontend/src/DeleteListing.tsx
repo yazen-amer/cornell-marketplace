@@ -7,8 +7,8 @@ type DeleteListingProps = {
 }
 
 export default function DeleteListing(props: DeleteListingProps) {
-    let params = useParams();
-    let navigate = useNavigate();
+    const params = useParams();
+    const navigate = useNavigate();
 
     const confirmed = window.confirm("Are you sure you want to delete this item?");
 

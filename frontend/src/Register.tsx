@@ -1,3 +1,4 @@
+import { readJsonResponse } from './api';
 import { API_URL } from './config';
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
@@ -20,7 +21,7 @@ export default function Register({ setToken }: RegisterProps) {
         e.preventDefault();
         setError('');
 
-        if (!email.toLowerCase().endsWith(CORNELL_EMAIL_SUFFIX)) {
+        if (!email.trim().toLowerCase().endsWith(CORNELL_EMAIL_SUFFIX)) {
           setError('Please use your @cornell.edu email to register.');
           return;
         }
@@ -28,13 +29,9 @@ export default function Register({ setToken }: RegisterProps) {
         fetch(`${API_URL}/auth/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, email, password }),
+          body: JSON.stringify({ username: username.trim(), email: email.trim(), password }),
         })
-          .then(async (response) => {
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.error || 'Could not create your account.');
-            return data;
-          })
+          .then((response) => readJsonResponse<{ email: string }>(response, 'Could not create your account.'))
           .then((data) => {
             navigate('/verify', { state: { email: data.email } });
           })

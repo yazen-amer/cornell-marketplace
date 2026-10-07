@@ -1,3 +1,4 @@
+import { readJsonResponse } from './api';
 import { API_URL } from './config';
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
@@ -18,13 +19,9 @@ export default function Login({ setToken }: LoginProps) {
         fetch(`${API_URL}/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({ email: email.trim(), password }),
         })
-          .then(async (response) => {
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.error || 'Invalid email or password');
-            return data;
-          })
+          .then((response) => readJsonResponse<{ token: string }>(response, 'Invalid email or password'))
           .then((data) => {
             localStorage.setItem('token', data.token);
             setToken(data.token);

@@ -1,3 +1,4 @@
+import { readJsonResponse } from './api';
 import { API_URL } from './config';
 import { BrowserRouter as Router, Route, Routes, Navigate, Outlet } from 'react-router-dom';
 import ListingDetails from './ListingDetails.tsx';
@@ -13,44 +14,41 @@ import './App.css';
 
 export type UserDto = { id: number; username: string; };
 
+function PrivateRoutes({ loading, user, error }: { loading: boolean; user: UserDto | null; error: string | null }) {
+  if (loading) return <div className="loading-state">Checking your session?</div>;
+  if (error) return <div role="alert" className="loading-state">{error} <button onClick={() => window.location.reload()}>Retry</button></div>;
+  return user ? <Outlet /> : <Navigate to="/login" />;
+}
+
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));
-  const [currentUser, setCurrentUser] = useState<UserDto | null>(null);
-  const [authLoading, setAuthLoading] = useState(true);
+  const [session, setSession] = useState<{ token: string; user: UserDto | null; error: string | null } | null>(null);
+  const currentUser = token && session?.token === token ? session.user : null;
+  const authLoading = Boolean(token && session?.token !== token);
+  const authError = token && session?.token === token ? session.error : null;
 
   useEffect(() => {
-    if (!token) {
-      setCurrentUser(null);
-      setAuthLoading(false);
-      return;
-    }
-
+    if (!token) return;
+    const controller = new AbortController();
     fetch(`${API_URL}/users/me`, {
-      method: 'GET',
       headers: { Authorization: `Bearer ${token}` },
+      signal: controller.signal,
     })
-      .then((response) => {
-        if (!response.ok) {
-          setCurrentUser(null);
-          setToken(null);
+      .then(async (response) => {
+        if (response.status === 401 || response.status === 403) {
+          if (controller.signal.aborted) return;
           localStorage.removeItem('token');
-          setAuthLoading(false);
+          setToken(null);
           return;
         }
-        return response.json() as Promise<UserDto>;
+        const user = await readJsonResponse<UserDto>(response, 'Could not check your session');
+        if (!controller.signal.aborted) setSession({ token, user, error: null });
       })
-      .then((data) => {
-        if (data) {
-          setCurrentUser(data);
-          setAuthLoading(false);
-        }
+      .catch((err: unknown) => {
+        if (!controller.signal.aborted) setSession({ token, user: null, error: err instanceof Error ? err.message : 'Could not check your session.' });
       });
+    return () => controller.abort();
   }, [token]);
-
-  const PrivateRoutes = () => {
-    if (authLoading) return <div className="loading-state">Checking your session…</div>;
-    return currentUser ? <Outlet /> : <Navigate to="/login" />;
-  };
 
   return (
     <Router>
@@ -59,7 +57,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/listings/:id" element={<ListingDetails currentUser={currentUser} token={token} />} />
-          <Route element={<PrivateRoutes />}>
+          <Route element={<PrivateRoutes loading={authLoading} user={currentUser} error={authError} />}>
             <Route path="/create-listing" element={<CreateListing token={token} />} />
             <Route path="/listings/:id/edit" element={<EditListing token={token} />} />
           </Route>

@@ -9,9 +9,9 @@ export interface Listing { id: number; title: string; price: number; description
 export function HomePage() {
   const [listings, setListings] = useState<Listing[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const params = new URLSearchParams({ title: searchTerm });
 
   useEffect(() => {
+    const params = new URLSearchParams({ title: searchTerm });
     const url = searchTerm === ''
       ? `${API_URL}/listings`
       : `${API_URL}/listings/search?${params}`;

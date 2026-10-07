@@ -1,6 +1,7 @@
 package com.yazen.cornellmarketplace.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -43,10 +44,14 @@ public class Users implements UserDetails {
         return id;
     }
 
+    @JsonIgnore
     @Override
     public String getUsername() {
         return email;
     }
+
+    @JsonProperty("username")
+    public String getDisplayName() { return username; }
 
     @Column(unique = true, length = 100, nullable = false)
     private String email;
@@ -82,6 +87,7 @@ public class Users implements UserDetails {
         this.verified = verified;
     }
 
+    @JsonIgnore
     public String getVerificationCode() {
         return verificationCode;
     }
@@ -90,6 +96,7 @@ public class Users implements UserDetails {
         this.verificationCode = verificationCode;
     }
 
+    @JsonIgnore
     public Date getVerificationCodeExpiry() {
         return verificationCodeExpiry;
     }

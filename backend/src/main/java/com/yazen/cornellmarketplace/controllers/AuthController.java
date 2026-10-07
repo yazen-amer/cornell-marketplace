@@ -9,6 +9,7 @@ import com.yazen.cornellmarketplace.dtos.ResendVerificationDto;
 import com.yazen.cornellmarketplace.dtos.VerifyEmailDto;
 import com.yazen.cornellmarketplace.services.AuthService;
 import org.springframework.stereotype.Controller;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -23,25 +24,25 @@ public class AuthController {
 
     @PostMapping("/auth/register")
     @ResponseBody
-    public RegisterResponse registerUser(@RequestBody RegisterDto registerDto) {
+    public RegisterResponse registerUser(@Valid @RequestBody RegisterDto registerDto) {
         return authService.register(registerDto);
     }
 
     @PostMapping("/auth/login")
     @ResponseBody
-    public LoginResponse loginUser(@RequestBody LoginDto loginDto) {
+    public LoginResponse loginUser(@Valid @RequestBody LoginDto loginDto) {
         return authService.login(loginDto);
     }
 
     @PostMapping("/auth/verify")
     @ResponseBody
-    public LoginResponse verifyEmail(@RequestBody VerifyEmailDto verifyEmailDto) {
+    public LoginResponse verifyEmail(@Valid @RequestBody VerifyEmailDto verifyEmailDto) {
         return authService.verifyEmail(verifyEmailDto);
     }
 
     @PostMapping("/auth/resend-verification")
     @ResponseBody
-    public MessageResponse resendVerification(@RequestBody ResendVerificationDto resendVerificationDto) {
+    public MessageResponse resendVerification(@Valid @RequestBody ResendVerificationDto resendVerificationDto) {
         return authService.resendVerification(resendVerificationDto);
     }
 

@@ -15,6 +15,9 @@ import com.yazen.cornellmarketplace.exceptions.InvalidVerificationCodeException;
 import com.yazen.cornellmarketplace.repositories.UserRepository;
 import java.security.SecureRandom;
 import java.util.Date;
+import java.util.Locale;
+import java.nio.charset.StandardCharsets;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -53,8 +56,9 @@ public class AuthService {
         this.emailService = emailService;
     }
 
+    @Transactional
     public RegisterResponse register(RegisterDto registerDto) {
-        String email = registerDto.getEmail().trim().toLowerCase();
+        String email = normalizeEmail(registerDto.getEmail());
 
         if (!isCornellEmail(email)) {
             throw new InvalidCornellEmailException(allowedEmailDomain);
@@ -64,8 +68,11 @@ public class AuthService {
             throw new EmailAlreadyRegisteredException();
         }
 
+        if (registerDto.getPassword().getBytes(StandardCharsets.UTF_8).length > 72) {
+            throw new IllegalArgumentException("Password must be at most 72 UTF-8 bytes.");
+        }
         String hashedPassword = passwordEncoder.encode(registerDto.getPassword());
-        Users newUser = new Users(registerDto.getUsername(), email, hashedPassword);
+        Users newUser = new Users(registerDto.getUsername().trim(), email, hashedPassword);
 
         assignNewVerificationCode(newUser);
         userRepository.save(newUser);
@@ -79,18 +86,20 @@ public class AuthService {
     }
 
     public LoginResponse login(LoginDto loginDto) {
+        String email = normalizeEmail(loginDto.getEmail());
         // Spring Security calls Users.isEnabled() as part of this authenticate() call,
         // via DaoAuthenticationProvider's pre-authentication checks. An unverified
         // account throws DisabledException here, before the password is even compared.
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword())
+                new UsernamePasswordAuthenticationToken(email, loginDto.getPassword())
         );
-        Users user = userRepository.findByEmail(loginDto.getEmail()).orElseThrow();
+        Users user = userRepository.findByEmail(email).orElseThrow();
         return new LoginResponse(jwtService.generateToken(user));
     }
 
+    @Transactional
     public LoginResponse verifyEmail(VerifyEmailDto verifyEmailDto) {
-        String email = verifyEmailDto.getEmail().trim().toLowerCase();
+        String email = normalizeEmail(verifyEmailDto.getEmail());
         Users user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new InvalidVerificationCodeException("Invalid email or code."));
 
@@ -116,8 +125,9 @@ public class AuthService {
         return new LoginResponse(jwtService.generateToken(user));
     }
 
+    @Transactional
     public MessageResponse resendVerification(ResendVerificationDto resendDto) {
-        String email = resendDto.getEmail().trim().toLowerCase();
+        String email = normalizeEmail(resendDto.getEmail());
         Users user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new InvalidVerificationCodeException("No account found for that email."));
 
@@ -130,6 +140,14 @@ public class AuthService {
         emailService.sendVerificationCode(email, user.getVerificationCode());
 
         return new MessageResponse("A new verification code has been sent to " + email + ".");
+    }
+
+    private String normalizeEmail(String email) {
+        String normalized = email.trim().toLowerCase(Locale.ROOT);
+        if (!normalized.matches("[^\\s@]+@[^\\s@]+\\.[^\\s@]+")) {
+            throw new IllegalArgumentException("Please enter a valid email address.");
+        }
+        return normalized;
     }
 
     private boolean isCornellEmail(String email) {

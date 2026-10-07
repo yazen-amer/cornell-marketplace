@@ -31,13 +31,7 @@ public class UserController {
     public UserDto getCurrentUser(Principal principal) {
         String email = principal.getName();
         Optional<Users> user = userRepository.findByEmail(email);
-        return new UserDto(user.get().getId(), user.get().getUsername());
-    }
-
-    @PostMapping("/users")
-    @ResponseBody
-    public Users createUser(@RequestBody Users user) {
-        return userRepository.save(user);
+        return new UserDto(user.get().getId(), user.get().getDisplayName());
     }
 
 }
