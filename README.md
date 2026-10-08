@@ -2,6 +2,10 @@
 
 A campus marketplace with Cornell email verification, seller-owned listings, title search, and photo uploads. The backend uses Java 17, Spring Boot, Spring Security, and PostgreSQL; the frontend uses React, TypeScript, and Vite. Photos are stored in S3.
 
+![Cornell Marketplace registration screen](docs/screenshots/marketplace-registration.jpg)
+
+Registration screen captured October 8, 2026. The public listing feed was empty during this check; no account was submitted.
+
 ## What's implemented
 
 Students register with a Cornell email address, verify a six-digit email code, and log in with a JWT. A listing includes a title, description, price, photo, pickup location, and seller. Sellers can edit or delete their own listings; the API checks ownership using the authenticated user.
