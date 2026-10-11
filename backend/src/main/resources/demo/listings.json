@@ -1,0 +1,86 @@
+[
+  {
+    "title": "IKEA desk - good for a small dorm",
+    "price": 45,
+    "description": "Demo listing (fictional): Two years old, a few marks on the top. Legs come off for moving. Selling because my new room has a desk.",
+    "pickupLocation": "RPCC (Robert Purcell Community Center)",
+    "imageUrl": "/demo/desk.jpg"
+  },
+  {
+    "title": "Wooden chair for a dorm desk",
+    "price": 30,
+    "description": "Demo listing (fictional): Solid chair with a fabric seat. Cushion has some wear. Fits under a standard dorm desk. Can meet after afternoon classes.",
+    "pickupLocation": "Appel Commons",
+    "imageUrl": "/demo/chair.jpg"
+  },
+  {
+    "title": "All-in-one computer with keyboard",
+    "price": 80,
+    "description": "Demo listing (fictional): Older desktop for documents and web browsing. Keyboard and power cable included. You can check it running at pickup.",
+    "pickupLocation": "Olin Library",
+    "imageUrl": "/demo/monitor.jpg"
+  },
+  {
+    "title": "Wired over-ear headphones",
+    "price": 22,
+    "description": "Demo listing (fictional): Used for studying in the library. Pads have some wear. Cable included; no Bluetooth.",
+    "pickupLocation": "Uris Library",
+    "imageUrl": "/demo/headphones.jpg"
+  },
+  {
+    "title": "Intro textbooks and graph paper bundle",
+    "price": 18,
+    "description": "Demo listing (fictional): Used introductory course books with pencil notes. Message for editions before buying; not every class uses these.",
+    "pickupLocation": "Ho Plaza",
+    "imageUrl": "/demo/books.jpg"
+  },
+  {
+    "title": "Commuter bike with lock",
+    "price": 95,
+    "description": "Demo listing (fictional): Used around campus. Brakes work; rear tire could use air. Frame is best for someone around 5 ft 7 to 5 ft 10.",
+    "pickupLocation": "Becker House",
+    "imageUrl": "/demo/bike.jpg"
+  },
+  {
+    "title": "Everyday backpack, 15-inch laptop sleeve",
+    "price": 20,
+    "description": "Demo listing (fictional): Dark backpack with a padded sleeve. Zipper works; small stain on the bottom. Washed before pickup.",
+    "pickupLocation": "Collegetown Bagels (CTB)",
+    "imageUrl": "/demo/backpack.jpg"
+  },
+  {
+    "title": "Reading lamp for a desk or bedside table",
+    "price": 12,
+    "description": "Demo listing (fictional): Warm light, working switch. Includes LED bulb. Small scuff on the base.",
+    "pickupLocation": "Alice Cook House",
+    "imageUrl": "/demo/lamp.jpg"
+  },
+  {
+    "title": "Small bookshelf - three shelves",
+    "price": 25,
+    "description": "Demo listing (fictional): Fits next to a dorm desk. A little wobble on uneven floors. Bring a friend to carry it.",
+    "pickupLocation": "Court-Kay-Bauer Hall (CKB)",
+    "imageUrl": "/demo/books.jpg"
+  },
+  {
+    "title": "Used laptop for browsing and notes",
+    "price": 160,
+    "description": "Demo listing (fictional): Good for documents and web browsing, not gaming. Battery lasts about two hours. Charger included; can show it running at pickup.",
+    "pickupLocation": "Olin Library",
+    "imageUrl": "/demo/laptop.jpg"
+  },
+  {
+    "title": "Spare desktop computer for notes",
+    "price": 60,
+    "description": "Demo listing (fictional): Older all-in-one computer, used for notes. Power cable and keyboard included. Good for a basic dorm setup.",
+    "pickupLocation": "Appel Commons",
+    "imageUrl": "/demo/monitor.jpg"
+  },
+  {
+    "title": "Paperback reading bundle",
+    "price": 10,
+    "description": "Demo listing (fictional): Five used paperbacks with worn covers. Clearing space before moving; sold together.",
+    "pickupLocation": "Ho Plaza",
+    "imageUrl": "/demo/books.jpg"
+  }
+]

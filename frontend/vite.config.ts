@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: Object.fromEntries(['/auth', '/users', '/listings'].map((path) => [path, {
-      target: 'http://localhost:8080', changeOrigin: true,
+      target: 'http://127.0.0.1:8080', changeOrigin: true,
     }])),
   },
 })

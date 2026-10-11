@@ -60,6 +60,11 @@ class CornellmarketplaceApplicationTests {
         return json.readTree(body).get("token").asText();
     }
 
+    @Test void demoListingsAreAbsentWithoutDemoProfile() {
+        assertEquals(0, listings.count());
+        assertTrue(users.findByEmail("marketplace-demo-listings@cornell.edu").isEmpty());
+    }
+
     @Test void registerVerifyLoginAndReadProfile() throws Exception {
         register(" Student@Cornell.edu ");
         verify(mail).sendVerificationCode(eq("student@cornell.edu"), matches("[0-9]{6}"));

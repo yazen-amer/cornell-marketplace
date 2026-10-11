@@ -40,6 +40,10 @@ export function HomePage() {
         </div>
       </div>
 
+      {listings.some((listing) => listing.description.startsWith('Demo listing (fictional):')) && (
+        <p className="muted">Demo listings: fictional campus items with stock photos, not real offers.</p>
+      )}
+
       {listings.length === 0 ? (
         <div className="empty-state">No listings found.</div>
       ) : (
