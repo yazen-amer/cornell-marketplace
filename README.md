@@ -1,32 +1,34 @@
 # Cornell Marketplace
 
-A campus marketplace with Cornell email verification, seller-owned listings, title search, and photo uploads. The backend uses Java 17, Spring Boot, Spring Security, and PostgreSQL; the frontend uses React, TypeScript, and Vite. Photos are stored in S3.
+A marketplace for Cornell students to post items, search listings, and upload photos. Accounts require Cornell email verification.
+
+Built with React, TypeScript, and Vite; Java 17, Spring Boot, Spring Security, and PostgreSQL on the backend. Photos are stored in S3.
 
 ## Screenshots
 
 ![Seeded campus marketplace homepage](docs/screenshots/marketplace-homepage.jpg)
 
-Twelve fictional college listings, with used-item prices, condition notes, campus pickup locations, and stock photos. The screenshot shows the real frontend backed by the local Spring application and H2 database.
+The local demo has 12 fictional listings with condition notes, campus pickup locations, and stock photos. It runs against the Spring backend and an H2 database.
 
 ![Creating a local demo account](docs/screenshots/marketplace-registration.jpg)
 
 ![Email verification after account creation](docs/screenshots/marketplace-verification.jpg)
 
-Account creation was submitted through the app, the code was captured by a local SMTP mailbox, and verification logged the demo account in. No mail was sent to Cornell. Screenshots captured October 11, 2026.
+The demo account was registered and verified through the app. A local SMTP mailbox captured the code; no email was sent to Cornell. Screenshots are from October 11, 2026.
 
 ![Searching the seeded listings](docs/screenshots/marketplace-search.jpg)
 
-## What's implemented
+## Features
 
 Students register with a Cornell email address, verify a six-digit email code, and log in with a JWT. A listing includes a title, description, price, photo, pickup location, and seller. Sellers can edit or delete their own listings; the API checks ownership using the authenticated user.
 
-A few implementation details:
+Account and listing behavior:
 
 - Passwords are hashed with BCrypt. Email addresses are normalized before registration, verification, and login.
 - Registration and code resends are transactional. If SMTP delivery fails, the database changes roll back; a failed resend preserves the previous code.
 - Password hashes and verification codes are excluded from user and listing JSON.
 - The frontend preserves a session during a network failure and offers a retry. An invalid or expired token clears the session.
-- Search uses Spring Data's `findByTitleContainingIgnoreCase`. It is a case-insensitive title substring search.
+- Search matches part of a listing title, ignoring case (`findByTitleContainingIgnoreCase`).
 
 ## Run the seeded local demo
 
@@ -46,11 +48,11 @@ npm ci
 npm run dev
 ```
 
-Open the Vite URL. Register a fictional `@cornell.edu` address, then enter the code printed by the local mailbox. Registration, verification, JWT login, and title search use the normal API; authentication is not bypassed.
+Open the Vite URL. Register a fictional `@cornell.edu` address, then enter the code printed by the local mailbox. The demo uses the normal registration, verification, login, and search endpoints.
 
-The `demo` profile binds the backend to `127.0.0.1` and uses an in-memory H2 database. Restarting clears demo accounts and reseeds the listings. The synthetic listing seller is unverified and has a random hashed password, so it cannot log in. Seeding is idempotent and does not overwrite existing records. The local demo JWT key is public test configuration; do not use this profile for a public deployment. S3 uploads still require the normal S3 setup.
+The `demo` profile binds the backend to `127.0.0.1` and uses an in-memory H2 database. Restarting clears demo accounts and reseeds the listings. The seed seller is unverified and has a random hashed password, so it cannot log in. Running the seed again doesn’t duplicate listings or overwrite records. The local demo JWT key is public test configuration; do not use this profile for a public deployment. S3 uploads still require the normal S3 setup.
 
-Data is in `backend/src/main/resources/demo/listings.json`; photos and source URLs are in `frontend/public/demo/`. Both the UI and listing descriptions label the data as fictional. Normal startup without the `demo` profile does not seed listings or replace production settings.
+Data is in `backend/src/main/resources/demo/listings.json`; photos and source URLs are in `frontend/public/demo/`. The homepage and descriptions label these as fictional listings. Normal startup without the `demo` profile does not seed listings or replace production settings.
 
 ## Local setup
 
@@ -95,7 +97,7 @@ npm run build
 npm run lint
 ```
 
-Use `bash ./mvnw test` on macOS/Linux. Backend tests start the application with H2, real BCrypt/JWT/security filters, and mocked email and S3 calls. They cover registration through login, malformed requests, verification expiry, email rollback, secret serialization, and listing permissions. Frontend tests cover authentication responses and session loading. Demo tests also check seed counts, prices, pickup locations, title search, repeat-run idempotence, and an unverified seed seller.
+Use `bash ./mvnw test` on macOS/Linux. Backend tests use H2 and the application’s BCrypt, JWT, and security filters. Email and S3 calls are mocked. They cover registration through login, malformed requests, verification expiry, email rollback, secret serialization, and listing permissions. Frontend tests cover authentication responses and session loading. Demo tests check the listings, title search, repeated seeding, and the seed seller’s unverified status.
 
 These tests do not verify a deployed PostgreSQL database, email delivery, or S3 permissions.
 
@@ -105,4 +107,4 @@ Set `VITE_API_URL` to the public backend origin before building the frontend, wi
 
 The app handles listings and accounts; it has no checkout or in-app messaging. Listing retrieval and search are unpaginated. Hibernate currently uses `ddl-auto=update` rather than versioned database migrations.
 
-The repository contains no reproducible search benchmark or index migration, so no query-speed improvement is claimed here.
+The repo has no reproducible search benchmark or search index migration.
